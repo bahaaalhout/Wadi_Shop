@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>39549839289-k7gkcbetmhub0ad93jrhsnpcfr59b4a7.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.39549839289-k7gkcbetmhub0ad93jrhsnpcfr59b4a7</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCuFxU7duea1B9HXl6M32uG3i79gMWE0wg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>39549839289</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.wadiShop</string>
+	<key>PROJECT_ID</key>
+	<string>wadi-shop-41b40</string>
+	<key>STORAGE_BUCKET</key>
+	<string>wadi-shop-41b40.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:39549839289:ios:84b5c21b1e83d8cc18b868</string>
+</dict>
+</plist>

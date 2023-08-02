@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "39549839289",
+    "project_id": "wadi-shop-41b40",
+    "storage_bucket": "wadi-shop-41b40.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39549839289:android:ba6989501bd9787018b868",
+        "android_client_info": {
+          "package_name": "com.example.wadi_shop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "39549839289-2he0qmklk419nbeg89m6evqhdnuepp11.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTUKTvVkLSZnLk32JKH64Iaiq5dgntFFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "39549839289-2he0qmklk419nbeg89m6evqhdnuepp11.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
