@@ -40,6 +40,7 @@ class _MyAddressScreenState extends State<MyAddressScreen> {
             longitude: data['lng'],
             address: data['address'],
           ),
+          id: data['id'],
         );
       }).toList();
 
@@ -112,7 +113,7 @@ class _MyAddressScreenState extends State<MyAddressScreen> {
                             child: AddressCard(
                               address: favoriteList[index],
                               deleteItem: () {
-                                deleteAddress('$index');
+                                deleteAddress(favoriteList[index].id);
                               },
                             ),
                           ),
@@ -124,11 +125,14 @@ class _MyAddressScreenState extends State<MyAddressScreen> {
                 MyButtonWidget(
                     title: 'إضافة عنوان جديد',
                     press: () async {
-                      Navigator.push(
+                      final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const AddPlace(),
                           ));
+                      if (result != null) {
+                        setState(() {});
+                      }
                     }),
               ],
             )

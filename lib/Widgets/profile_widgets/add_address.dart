@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +24,7 @@ class _AddPlaceState extends ConsumerState<AddPlace> {
 
   PlaceLocation? selectedLocation;
 
-  void _addItem() {
+  void _addItem() async {
     if (_keyState.currentState!.validate()) {
       _keyState.currentState!.save();
       if (selectedLocation == null) {
@@ -45,11 +47,19 @@ class _AddPlaceState extends ConsumerState<AddPlace> {
       if (selectedLocation == null) {
         return;
       }
-      ref
-          .read(userPlaceProvider.notifier)
-          .addItem(Place(title: _enteredTitle, location: selectedLocation!));
+      final user = FirebaseAuth.instance.currentUser;
 
-      Navigator.of(context).pop();
+      final addressRef = FirebaseFirestore.instance
+          .collection('address')
+          .doc(user!.uid)
+          .collection('id');
+      final snapshot = await addressRef.get();
+      ref.read(userPlaceProvider.notifier).addItem(Place(
+          title: _enteredTitle,
+          location: selectedLocation!,
+          id: snapshot.docs.length.toString()));
+      const t = 'sss';
+      Navigator.of(context).pop(t);
     }
   }
 

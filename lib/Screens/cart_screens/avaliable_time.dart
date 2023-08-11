@@ -3,8 +3,8 @@ import 'package:wadi_shop/constants.dart';
 import '../../Models/delivery_time.dart';
 
 class AvailableTime extends StatefulWidget {
-  const AvailableTime({super.key});
-
+  const AvailableTime({super.key, required this.select});
+  final void Function(int index) select;
   @override
   State<AvailableTime> createState() => _AvailableTimeState();
 }
@@ -39,6 +39,7 @@ class _AvailableTimeState extends State<AvailableTime> {
                 setState(() {
                   selectedAddressIndex = index;
                 });
+                widget.select(index);
               },
               child: Card(
                 shape: RoundedRectangleBorder(

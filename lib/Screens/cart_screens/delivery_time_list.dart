@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:wadi_shop/constants.dart';
 import '../../Models/delivery_time.dart';
 
 class DeliveryTime extends StatefulWidget {
-  const DeliveryTime({super.key});
-
+  const DeliveryTime({
+    super.key,
+    required this.select,
+  });
+  final void Function(int index) select;
   @override
   State<DeliveryTime> createState() => _DeliveryTimeState();
 }
@@ -19,6 +23,17 @@ class _DeliveryTimeState extends State<DeliveryTime> {
         scrollDirection: Axis.horizontal,
         itemCount: deliveryTime.length,
         itemBuilder: (context, index) {
+          final editedList = deliveryTime
+              .map(
+                (e) => DateFormat.Md().format(e),
+              )
+              .toList();
+          if (index == 0) {
+            editedList[0] = 'اليوم';
+          }
+          if (index == 1) {
+            editedList[1] = 'غدا';
+          }
           return Container(
             width: 130,
             decoration: BoxDecoration(
@@ -39,6 +54,7 @@ class _DeliveryTimeState extends State<DeliveryTime> {
                 setState(() {
                   selectedAddressIndex = index;
                 });
+                widget.select(index);
               },
               child: Card(
                 color: selectedAddressIndex == index
@@ -52,7 +68,7 @@ class _DeliveryTimeState extends State<DeliveryTime> {
                       const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   child: Center(
                     child: Text(
-                      deliveryTime[index],
+                      editedList[index].toString(),
                       style: TextStyle(
                         color: selectedAddressIndex == index
                             ? Colors.white

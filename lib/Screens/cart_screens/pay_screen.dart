@@ -1,27 +1,59 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:wadi_shop/Models/delivery_time.dart';
 import 'package:wadi_shop/Screens/cart_screens/avaliable_time.dart';
 import 'package:wadi_shop/Screens/cart_screens/delivery_time_list.dart';
+import 'package:wadi_shop/Screens/tabs_screen.dart';
+import 'package:wadi_shop/Widgets/snakbar.dart';
 import 'dart:ui' as ui;
-import '../../Widgets/my_button.dart';
 import '../../Widgets/profile_widgets/back_icon.dart';
 import '../../constants.dart';
+import '../auth_screen.dart';
 import 'location_list.dart';
 
-class PayScreen extends StatefulWidget {
+class PayScreen extends ConsumerStatefulWidget {
   const PayScreen({super.key, required this.price});
   final double price;
   @override
-  State<PayScreen> createState() => _PayScreenState();
+  ConsumerState<PayScreen> createState() => _PayScreenState();
 }
 
-class _PayScreenState extends State<PayScreen> {
+class _PayScreenState extends ConsumerState<PayScreen> {
   final _keyState = GlobalKey<FormState>();
+  String? _location;
+
   bool isKash = false;
   bool isFinished = false;
   String? selectedDate; // Holds the selected date
-  // Function to show the date picker
+  bool isLoading = false;
+  int currentNumber = 0;
+  int currentIndex = 0;
+  bool isSelectedAvailableTime = false;
+  bool isSelectedLocation = false;
+  String? _availableTime;
 
+  void checkDeliveryDate(int index) {
+    currentIndex = index;
+  }
+
+  void checkAvailableTime(int index) {
+    isSelectedAvailableTime = true;
+
+    currentNumber = index;
+  }
+
+  void checkLocation(String location) {
+    isSelectedLocation = true;
+
+    _location = location;
+  }
+
+// Function to show the date picker
   void _selectDate(BuildContext context) async {
     final now = DateTime.now();
     final firstDate = DateTime(now.year + 5, now.month, now.day);
@@ -44,10 +76,110 @@ class _PayScreenState extends State<PayScreen> {
     final isValid = _keyState.currentState!.validate();
 
     if (!isValid) {
-      return print('error');
+      return;
     }
     setState(() {
       isFinished = true;
+    });
+  }
+
+  void confirmBuying() async {
+    if (!isSelectedAvailableTime || !isSelectedLocation) {
+      showCupertinoDialog(
+        context: context,
+        builder: ((ctx) => CupertinoAlertDialog(
+              title: const Text('Invalid Message'),
+              content: const Text('Select The Location, The Date And The Time'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  child: const Text('Okay'),
+                ),
+              ],
+            )),
+      );
+    }
+    if (!isSelectedAvailableTime || !isSelectedLocation) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    switch (currentNumber) {
+      case 0:
+        _availableTime = '7am-10am';
+      case 1:
+        _availableTime = '10am-1pm';
+      case 2:
+        _availableTime = '3pm-6pm';
+      case 3:
+        _availableTime = '7pm-9pm';
+        break;
+      default:
+    }
+    try {
+      // Initialize the random generator with a seed (you can use any value)
+      final random = Random.secure();
+
+      // Generate a random 5-digit integer
+      int randomNumber = random.nextInt(10000);
+
+      // Format the number to always have 5 digits (e.g., 00001)
+      String formattedId = randomNumber.toString().padLeft(5, '0');
+      // storing username from the user data
+      final userDocRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(auth.currentUser!.uid);
+      final userDocSnapshot = await userDocRef.get();
+
+      // Assuming 'username' is the field that stores the username in the document
+      final username = userDocSnapshot.data()!['username'];
+      // adding the new order data to the firestore
+
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(auth.currentUser!.uid)
+          .collection('id')
+          .get();
+
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(auth.currentUser!.uid)
+          .collection('id')
+          .doc('${snapshot.docs.length}')
+          .set({
+        'username': username,
+        'delivery_date': DateFormat.yMd().format(deliveryTime[currentIndex]),
+        'delivery_time': _availableTime,
+        'order_price': widget.price,
+        'order_number': 'WS$formattedId#',
+        'pay_method': isKash ? 'كاش' : 'بطاقة بنكية',
+        'address': _location,
+      }).then((value) => showCupertinoDialog(
+                context: context,
+                builder: ((ctx) => CupertinoAlertDialog(
+                      title: const Text('Invalid Message'),
+                      content: const Text('Success'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pushReplacement(MaterialPageRoute(
+                              builder: (context) => const TabScreen(),
+                            ));
+                          },
+                          child: const Text('Okay'),
+                        ),
+                      ],
+                    )),
+              ));
+    } catch (e) {
+      showSnackBar(context: context, content: 'error');
+    }
+
+    setState(() {
+      isLoading = false;
     });
   }
 
@@ -230,7 +362,9 @@ class _PayScreenState extends State<PayScreen> {
                                 ),
                               ),
                             )
-                          : const ChooseLocationList(),
+                          : ChooseLocationList(
+                              select: checkLocation,
+                            ),
                       const SizedBox(
                         height: 16,
                       ),
@@ -300,6 +434,7 @@ class _PayScreenState extends State<PayScreen> {
                                           children: [
                                             Expanded(
                                               child: TextFormField(
+                                                enabled: isKash ? false : true,
                                                 onTap: isKash
                                                     ? null
                                                     : () {
@@ -357,7 +492,9 @@ class _PayScreenState extends State<PayScreen> {
                                 ),
                               ),
                             )
-                          : const DeliveryTime(),
+                          : DeliveryTime(
+                              select: checkDeliveryDate,
+                            ),
                       SizedBox(height: !isFinished ? 20 : 10),
                       if (isFinished)
                         Text(
@@ -443,13 +580,34 @@ class _PayScreenState extends State<PayScreen> {
                                 ),
                               ),
                             )
-                          : const AvailableTime(),
+                          : AvailableTime(
+                              select: checkAvailableTime,
+                            ),
                     ],
                   ),
                 ),
               ),
             ),
-            if (isFinished) MyButtonWidget(title: 'تأكيد الشراء', press: () {})
+            if (isFinished)
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: confirmBuying,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kprimaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('تأكيد الشراء'),
+                ),
+              )
           ],
         ),
       ),

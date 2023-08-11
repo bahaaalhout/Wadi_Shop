@@ -24,12 +24,13 @@ class AddNewItem extends StateNotifier<List<Place>> {
     final newState = Place(
       title: places.title,
       location: places.location,
+      id: places.id,
     );
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('address')
-        .doc(auth.currentUser!.uid)
-        .collection('id')
-        .get();
+    // QuerySnapshot snapshot = await FirebaseFirestore.instance
+    //     .collection('address')
+    //     .doc(auth.currentUser!.uid)
+    //     .collection('id')
+    //     .get();
     // final db = await _onLoad();
     // int i = 0;
     // db.insert('user_places', {
@@ -44,7 +45,7 @@ class AddNewItem extends StateNotifier<List<Place>> {
         .collection('address')
         .doc(auth.currentUser!.uid)
         .collection('id')
-        .doc('${snapshot.docs.length}')
+        .doc(newState.id)
         .set({
       'id': newState.id,
       'title': newState.title,

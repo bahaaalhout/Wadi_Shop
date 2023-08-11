@@ -18,8 +18,8 @@ class Place {
   Place({
     required this.title,
     required this.location,
-    String? id,
-  }) : id = id ?? uuid.v4();
+    required this.id,
+  });
 
   final String id;
   final String title;

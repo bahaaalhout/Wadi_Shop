@@ -1,15 +1,11 @@
-import 'package:intl/intl.dart';
-
 final now = DateTime.now();
-final first =
-    DateFormat.Md().format(DateTime(now.year, now.month, now.day + 2));
-final second =
-    DateFormat.Md().format(DateTime(now.year, now.month, now.day + 3));
-final third =
-    DateFormat.Md().format(DateTime(now.year, now.month, now.day + 4));
+final now1 = DateTime(now.year, now.month, now.day + 1);
+final first = DateTime(now.year, now.month, now.day + 2);
+final second = DateTime(now.year, now.month, now.day + 3);
+final third = DateTime(now.year, now.month, now.day + 4);
 final deliveryTime = [
-  'اليوم',
-  'غدا',
+  now,
+  now1,
   first,
   second,
   third,
