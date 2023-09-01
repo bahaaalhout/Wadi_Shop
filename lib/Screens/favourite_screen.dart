@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wadi_shop/Provider/myfavorite_provider.dart';
 import 'package:wadi_shop/Widgets/cart_widgets/cart_card.dart';
 import 'package:wadi_shop/Widgets/login_button.dart';
 import 'package:wadi_shop/Widgets/snakbar.dart';
 
 import '../Models/new_product.dart';
+import '../Provider/get_address_provider.dart';
 
 class FavouriteScreen extends ConsumerStatefulWidget {
   const FavouriteScreen({

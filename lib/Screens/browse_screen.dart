@@ -5,7 +5,7 @@ import 'package:wadi_shop/Widgets/home_screen_widgets/product_card.dart';
 
 import 'package:wadi_shop/data/dummy_data.dart';
 
-class BrowseScreen extends StatefulWidget {
+class BrowseScreen extends StatelessWidget {
   const BrowseScreen({
     super.key,
     required this.avaliableItem,
@@ -14,11 +14,7 @@ class BrowseScreen extends StatefulWidget {
 
   final List<NewProduct> avaliableItem;
   final void Function(CategoryList categoryList) categoryFilter;
-  @override
-  State<BrowseScreen> createState() => _BrowseScreenState();
-}
 
-class _BrowseScreenState extends State<BrowseScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,7 +26,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             itemCount: dummyData.length,
             itemBuilder: (context, index) => InkWell(
               onTap: () {
-                widget.categoryFilter(dummyData[index]);
+                categoryFilter(dummyData[index]);
               },
               child: Container(
                 margin: const EdgeInsets.all(5),
@@ -72,7 +68,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 mainAxisSpacing: 1,
               ),
               children: [
-                for (final product in widget.avaliableItem)
+                for (final product in avaliableItem)
                   ProductCard(product: product),
               ],
             ),

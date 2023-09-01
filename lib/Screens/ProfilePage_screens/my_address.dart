@@ -1,79 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:wadi_shop/Models/place.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wadi_shop/Widgets/login_button.dart';
 import 'package:wadi_shop/Widgets/my_button.dart';
 import 'package:wadi_shop/Widgets/profile_widgets/address_card.dart';
 
 import 'package:wadi_shop/constants.dart';
 
-import '../../Provider/myfavorite_provider.dart';
+import '../../Models/place.dart';
+import '../../Provider/get_address_provider.dart';
 import '../../Widgets/profile_widgets/add_address.dart';
 import '../../Widgets/profile_widgets/back_icon.dart';
-import '../../Widgets/snakbar.dart';
 
-class MyAddressScreen extends StatefulWidget {
+class MyAddressScreen extends ConsumerWidget {
   const MyAddressScreen({super.key});
 
   @override
-  State<MyAddressScreen> createState() => _MyAddressScreenState();
-}
-
-class _MyAddressScreenState extends State<MyAddressScreen> {
-  Future<List<Place>> getAddress() async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    final addressRef = FirebaseFirestore.instance
-        .collection('address')
-        .doc(user!.uid)
-        .collection('id');
-
-    try {
-      final snapshot = await addressRef.get();
-      final addressList = snapshot.docs.map((doc) {
-        final data = doc.data();
-        return Place(
-          title: data['title'],
-          location: PlaceLocation(
-            latitude: data['lat'],
-            longitude: data['lng'],
-            address: data['address'],
-          ),
-          id: data['id'],
-        );
-      }).toList();
-
-      return addressList;
-    } catch (e) {
-      showSnackBar(
-          content: 'Failed to retrieve favorites: $e', context: context);
-      return [];
-    }
-  }
-
-  Future<void> deleteAddress(String itemId) async {
-    final user = auth.currentUser;
-    final favoriteRef = FirebaseFirestore.instance
-        .collection('address')
-        .doc(user!.uid)
-        .collection('id');
-
-    try {
-      await favoriteRef
-          .doc(itemId)
-          .delete()
-          .then((value) => showSnackBar(context: context, content: 'تم الحذف'));
-      setState(() {});
-    } catch (e) {
-      showSnackBar(
-          content: 'Failed to remove item from favorites: $e',
-          context: context);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
       appBar: AppBar(
@@ -91,29 +35,50 @@ class _MyAddressScreenState extends State<MyAddressScreen> {
       body: currentUserId != null
           ? Column(
               children: [
-                FutureBuilder(
-                  future: getAddress(),
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('address')
+                      .doc(auth.currentUser!.uid)
+                      .collection('id')
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Expanded(
                           child: Center(child: CircularProgressIndicator()));
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
-                    } else if (snapshot.data!.isEmpty) {
+                    } else if (!snapshot.hasData ||
+                        snapshot.data!.docs.isEmpty) {
                       return const Expanded(
                         child: Center(child: Text('أضف عنوان جديد')),
                       );
                     } else {
-                      final favoriteList = snapshot.data;
+                      final addressref = snapshot.data!.docs;
+                      final addressList = addressref.map((doc) {
+                        final data = doc.data();
+                        return Place(
+                          title: data['title'],
+                          location: PlaceLocation(
+                            latitude: data['lat'],
+                            longitude: data['lng'],
+                            address: data['address'],
+                          ),
+                          id: data['id'],
+                        );
+                      }).toList();
                       return Expanded(
                         child: ListView.builder(
-                          itemCount: favoriteList!.length,
+                          itemCount: addressList.length,
                           itemBuilder: (context, index) => Directionality(
                             textDirection: TextDirection.rtl,
                             child: AddressCard(
-                              address: favoriteList[index],
+                              address: addressList[index],
                               deleteItem: () {
-                                deleteAddress(favoriteList[index].id);
+                                ref
+                                    .read(getAddressProvider.notifier)
+                                    .deleteAddress(
+                                        addressList[index].id, context);
+                                // deleteAddress();
                               },
                             ),
                           ),
@@ -124,15 +89,12 @@ class _MyAddressScreenState extends State<MyAddressScreen> {
                 ),
                 MyButtonWidget(
                     title: 'إضافة عنوان جديد',
-                    press: () async {
-                      final result = await Navigator.push(
+                    press: () {
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AddPlace(),
+                            builder: (context) => AddPlace(),
                           ));
-                      if (result != null) {
-                        setState(() {});
-                      }
                     }),
               ],
             )
@@ -140,3 +102,10 @@ class _MyAddressScreenState extends State<MyAddressScreen> {
     );
   }
 }
+/**
+ * 
+ * 
+ */
+
+
+

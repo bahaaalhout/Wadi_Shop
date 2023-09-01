@@ -11,9 +11,9 @@ import 'package:wadi_shop/Screens/cart_screens/delivery_time_list.dart';
 import 'package:wadi_shop/Screens/tabs_screen.dart';
 import 'package:wadi_shop/Widgets/snakbar.dart';
 import 'dart:ui' as ui;
+import '../../Provider/get_address_provider.dart';
 import '../../Widgets/profile_widgets/back_icon.dart';
 import '../../constants.dart';
-import '../auth_screen.dart';
 import 'location_list.dart';
 
 class PayScreen extends ConsumerStatefulWidget {
@@ -47,10 +47,15 @@ class _PayScreenState extends ConsumerState<PayScreen> {
     currentNumber = index;
   }
 
-  void checkLocation(String location) {
+  void checkLocation(String location, int currentindex, int index) {
     isSelectedLocation = true;
-
+    setState(() {
+      currentIndex = index;
+    });
     _location = location;
+    setState(() {
+      currentIndex = index;
+    });
   }
 
 // Function to show the date picker

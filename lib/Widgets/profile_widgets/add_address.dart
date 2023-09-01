@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wadi_shop/Widgets/profile_widgets/back_icon.dart';
 
@@ -11,20 +12,15 @@ import '../../Provider/new_place_provider.dart';
 import '../../constants.dart';
 import 'location_input.dart';
 
-class AddPlace extends ConsumerStatefulWidget {
-  const AddPlace({super.key});
+class AddPlace extends ConsumerWidget {
+  AddPlace({super.key});
 
-  @override
-  ConsumerState<AddPlace> createState() => _AddPlaceState();
-}
-
-class _AddPlaceState extends ConsumerState<AddPlace> {
   final _keyState = GlobalKey<FormState>();
   String _enteredTitle = '';
 
   PlaceLocation? selectedLocation;
 
-  void _addItem() async {
+  void _addItem(BuildContext context, WidgetRef ref) async {
     if (_keyState.currentState!.validate()) {
       _keyState.currentState!.save();
       if (selectedLocation == null) {
@@ -58,13 +54,15 @@ class _AddPlaceState extends ConsumerState<AddPlace> {
           title: _enteredTitle,
           location: selectedLocation!,
           id: snapshot.docs.length.toString()));
-      const t = 'sss';
-      Navigator.of(context).pop(t);
+
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pop();
+      });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -116,7 +114,9 @@ class _AddPlaceState extends ConsumerState<AddPlace> {
                     height: 20,
                   ),
                   ElevatedButton(
-                    onPressed: _addItem,
+                    onPressed: () {
+                      _addItem(context, ref);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: kprimaryColor,
                       foregroundColor: Colors.white,

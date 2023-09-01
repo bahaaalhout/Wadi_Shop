@@ -10,11 +10,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:wadi_shop/Widgets/profile_widgets/back_icon.dart';
 import 'package:wadi_shop/constants.dart';
 
+import '../../Provider/get_address_provider.dart';
 import '../../Widgets/login_button.dart';
 import '../../Widgets/snakbar.dart';
 import '../auth_screen.dart';
-
-final auth = FirebaseAuth.instance;
 
 class MyProfile extends StatefulWidget {
   const MyProfile({
@@ -149,8 +148,6 @@ class _MyProfileState extends State<MyProfile> {
   @override
   @override
   Widget build(BuildContext context) {
-    final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
-
     final DocumentReference userRef =
         FirebaseFirestore.instance.collection('users').doc(currentUserId);
 

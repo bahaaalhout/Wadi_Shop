@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wadi_shop/Models/new_product.dart';
 import 'package:wadi_shop/Widgets/snakbar.dart';
 
-final auth = FirebaseAuth.instance;
+import 'get_address_provider.dart';
 
 class FavoriteMeal extends StateNotifier<List<NewProduct>> {
   FavoriteMeal() : super([]);

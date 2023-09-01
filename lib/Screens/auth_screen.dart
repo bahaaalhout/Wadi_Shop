@@ -1,12 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wadi_shop/Screens/otp_screen.dart';
 import 'package:wadi_shop/Screens/tabs_screen.dart';
 
 import 'package:wadi_shop/constants.dart';
-
-final auth = FirebaseAuth.instance;
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
